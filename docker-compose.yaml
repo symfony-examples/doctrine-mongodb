@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  php:
+    container_name: sf-doctrine-mongo-php
+    expose:
+      - 8000
+    depends_on:
+      - mongo
+    build:
+      context: .
+      target: local
+    volumes:
+      - '.:/var/www/symfony'
+
+  mongo:
+    container_name: sf-doctrine-mongo-db
+    image: mongo:6.0.5
+    environment:
+      MONGO_INITDB_DATABASE: symfony
+    ports:
+      - '27017:27017'
+    volumes:
+      - 'mongodb_data:/data/db'
+
+volumes:
+  mongodb_data:
+    driver: local
