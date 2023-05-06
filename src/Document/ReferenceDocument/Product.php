@@ -12,7 +12,7 @@ class Product extends AbstractDocument
     private ?string $name;
 
     #[ODM\Field(type: 'float', nullable: false)]
-    private ?string $amount;
+    private ?float $amount;
 
     #[ODM\ReferenceOne(nullable: false, targetDocument: Store::class, cascade: 'persist', inversedBy: 'products')]
     private Store $store;
@@ -29,12 +29,12 @@ class Product extends AbstractDocument
         return $this;
     }
 
-    public function getAmount(): ?string
+    public function getAmount(): ?float
     {
         return $this->amount;
     }
 
-    public function setAmount(?string $amount): self
+    public function setAmount(?float $amount): self
     {
         $this->amount = $amount;
 

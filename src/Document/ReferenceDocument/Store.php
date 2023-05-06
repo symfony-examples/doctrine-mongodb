@@ -13,8 +13,12 @@ class Store extends AbstractDocument
     #[ODM\Field(type: 'string', nullable: false)]
     private ?string $name;
 
-    /** @psalm-var Collection<Product> */
-    #[ODM\ReferenceMany(nullable: false, targetDocument: Product::class, cascade: ['persist', 'delete'], mappedBy: 'store')]
+    #[ODM\ReferenceMany(
+        nullable: false,
+        targetDocument: Product::class,
+        cascade: ['persist', 'delete'],
+        mappedBy: 'store'
+    )]
     private Collection $products;
 
     public function __construct()

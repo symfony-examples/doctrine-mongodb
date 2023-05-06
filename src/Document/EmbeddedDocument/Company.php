@@ -4,8 +4,8 @@ namespace App\Document\EmbeddedDocument;
 
 use App\Document\AbstractDocument;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 #[ODM\Document(collection: 'Company')]
 class Company extends AbstractDocument
@@ -80,12 +80,14 @@ class Company extends AbstractDocument
         return $this;
     }
 
-    public function getAddresses(): ArrayCollection
+    /** @psalm-return Collection<Address> */
+    public function getAddresses(): Collection
     {
         return $this->addresses;
     }
 
-    public function setAddresses(ArrayCollection $addresses): self
+    /** @psalm-param Collection<Address> $addresses */
+    public function setAddresses(Collection $addresses): self
     {
         $this->addresses = $addresses;
 

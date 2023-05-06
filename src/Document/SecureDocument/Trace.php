@@ -3,6 +3,8 @@
 namespace App\Document\SecureDocument;
 
 use App\Security\OpenSSL;
+use DateTime;
+use DateTimeInterface;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
@@ -21,11 +23,11 @@ class Trace
 
     /**
      * Document TTL, expired automatic after 3600 seconds
-     * Useful for data retention
+     * Useful for data retention.
      */
     #[ODM\Index(name: 'trace_ttl', expireAfterSeconds: 3600)]
     #[ODM\Field(type: 'date', nullable: false)]
-    private ?\DateTimeInterface $createdDate = null;
+    private ?DateTimeInterface $createdDate = null;
 
     public function getId(): ?string
     {
@@ -56,26 +58,41 @@ class Trace
         return $this;
     }
 
-    public function getCreatedDate(): ?\DateTimeInterface
+    public function getCreatedDate(): ?DateTimeInterface
     {
         return $this->createdDate;
     }
 
     #[ODM\PrePersist]
-    public function onPrePersist(): void
+    #[ODM\PreUpdate]
+    public function onPreSave(): void
     {
         // encrypt username and IP address before persist
-        $this->username = OpenSSL::encrypt($this->username);
-        $this->ipAddress = OpenSSL::encrypt($this->ipAddress);
+        if (is_string($this->username)) {
+            $this->username = OpenSSL::encrypt($this->username);
+        }
 
-        $this->createdDate = new \DateTime();
+        if (is_string($this->ipAddress)) {
+            $this->ipAddress = OpenSSL::encrypt($this->ipAddress);
+        }
+
+        $this->createdDate = new DateTime();
     }
 
     #[ODM\PostLoad]
     public function onPostLoad(LifecycleEventArgs $eventArgs): void
     {
+        $document = $eventArgs->getDocument();
+
         // decrypt username and IP address
-        $eventArgs->getDocument()->setUsername(OpenSSL::decrypt($eventArgs->getDocument()->getUsername()));
-        $eventArgs->getDocument()->setIpAddress(OpenSSL::decrypt($eventArgs->getDocument()->getIpAddress()));
+        if ($document instanceof Trace) {
+            if (is_string($document->getUsername())) {
+                $document->setUsername(OpenSSL::decrypt($document->getUsername()));
+            }
+
+            if (is_string($document->getIpAddress())) {
+                $document->setIpAddress(OpenSSL::decrypt($document->getIpAddress()));
+            }
+        }
     }
 }

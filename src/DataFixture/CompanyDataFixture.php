@@ -5,12 +5,13 @@ namespace App\DataFixture;
 use App\Document\EmbeddedDocument\Address;
 use App\Document\EmbeddedDocument\Company;
 use App\Document\EmbeddedDocument\Registration;
+use DateTime;
 use Doctrine\Bundle\MongoDBBundle\Fixture\ODMFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
 class CompanyDataFixture implements ODMFixtureInterface
 {
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
         $manager->persist(
             (new Company())
@@ -20,7 +21,7 @@ class CompanyDataFixture implements ODMFixtureInterface
                 ->setRegistration(
                     (new Registration())
                     ->setCity('Paris')
-                    ->setDate(new \DateTime('2023-04-25'))
+                    ->setDate(new DateTime('2023-04-25'))
                 )
                 ->addAddress(
                     (new Address())

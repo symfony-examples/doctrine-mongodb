@@ -2,6 +2,7 @@
 
 namespace App\Document\EmbeddedDocument;
 
+use DateTimeInterface;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 #[ODM\EmbeddedDocument]
@@ -11,7 +12,7 @@ class Registration
     private ?string $city = null;
 
     #[ODM\Field(type: 'date', nullable: false)]
-    private ?\DateTimeInterface $date = null;
+    private ?DateTimeInterface $date = null;
 
     public function getCity(): ?string
     {
@@ -25,12 +26,12 @@ class Registration
         return $this;
     }
 
-    public function getDate(): ?\DateTimeInterface
+    public function getDate(): ?DateTimeInterface
     {
         return $this->date;
     }
 
-    public function setDate(?\DateTimeInterface $date): self
+    public function setDate(?DateTimeInterface $date): self
     {
         $this->date = $date;
 
