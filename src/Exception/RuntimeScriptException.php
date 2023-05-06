@@ -2,6 +2,8 @@
 
 namespace App\Exception;
 
-class RuntimeScriptException extends \RuntimeException
+use RuntimeException;
+
+class RuntimeScriptException extends RuntimeException
 {
 }

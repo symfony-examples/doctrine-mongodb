@@ -44,5 +44,6 @@ return (new PhpCsFixer\Config())
         'trailing_comma_in_multiline' => true,
         'yoda_style' => false,
         'single_line_throw' => false,
+        'global_namespace_import' => true,
     ])
     ->setFinder($finder);

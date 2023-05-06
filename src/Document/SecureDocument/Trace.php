@@ -3,6 +3,8 @@
 namespace App\Document\SecureDocument;
 
 use App\Security\OpenSSL;
+use DateTime;
+use DateTimeInterface;
 use Doctrine\ODM\MongoDB\Event\LifecycleEventArgs;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
@@ -25,7 +27,7 @@ class Trace
      */
     #[ODM\Index(name: 'trace_ttl', expireAfterSeconds: 3600)]
     #[ODM\Field(type: 'date', nullable: false)]
-    private ?\DateTimeInterface $createdDate = null;
+    private ?DateTimeInterface $createdDate = null;
 
     public function getId(): ?string
     {
@@ -56,7 +58,7 @@ class Trace
         return $this;
     }
 
-    public function getCreatedDate(): ?\DateTimeInterface
+    public function getCreatedDate(): ?DateTimeInterface
     {
         return $this->createdDate;
     }
@@ -74,14 +76,16 @@ class Trace
             $this->ipAddress = OpenSSL::encrypt($this->ipAddress);
         }
 
-        $this->createdDate = new \DateTime();
+        $this->createdDate = new DateTime();
     }
 
     #[ODM\PostLoad]
     public function onPostLoad(LifecycleEventArgs $eventArgs): void
     {
+        $document = $eventArgs->getDocument();
+
         // decrypt username and IP address
-        if (($document = $eventArgs->getDocument()) instanceof Trace) {
+        if ($document instanceof Trace) {
             if (is_string($document->getUsername())) {
                 $document->setUsername(OpenSSL::decrypt($document->getUsername()));
             }

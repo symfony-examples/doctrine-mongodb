@@ -40,6 +40,11 @@ RUN set -xe \
 
 COPY ./.docker/php/mongodb.ini /usr/local/etc/php/conf.d/
 
+## INSTALL PHP DETECTORS (PHPCPD & PHPMD)
+RUN wget -c https://phar.phpunit.de/phpcpd.phar -O /usr/local/bin/phpcpd \
+    && wget -c https://phpmd.org/static/latest/phpmd.phar -O /usr/local/bin/phpmd \
+    && chmod +x /usr/local/bin/phpcpd /usr/local/bin/phpmd
+
 FROM builder as ci
 ENV APP_ENV=test
 

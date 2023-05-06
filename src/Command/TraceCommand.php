@@ -9,6 +9,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Throwable;
 
 #[AsCommand(
     name: 'app:trace:find',
@@ -41,7 +42,7 @@ class TraceCommand extends Command
             }
 
             return Command::SUCCESS;
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $io->error(sprintf('An error occurred when processing import. %s', $e->getMessage()));
 
             return Command::FAILURE;

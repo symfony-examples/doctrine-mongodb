@@ -38,7 +38,7 @@ data-fixtures: ## Execute doctrine fixtures.
 ##
 ## Quality tools
 ##----------------------------------------------------------------------------------------------------------------------
-.PHONY: fix check-cs phpstan unit ci
+.PHONY: fix check-cs phpstan cpd md unit ci
 
 fix: ## Run php cs fixer
 	$(DC) exec -e PHP_CS_FIXER_IGNORE_ENV=1 php ./vendor/bin/php-cs-fixer fix -vvv --config=.php-cs-fixer.dist.php --cache-file=.php-cs-fixer.cache
@@ -49,10 +49,18 @@ check-cs: ## Run php cs fixer
 phpstan: ## Run phpstan code static analyze
 	$(EXEC_PHP) ./vendor/bin/phpstan analyse -c phpstan.neon
 
+cpd: ## Run phpcpd to detect duplicated code source
+	$(DC) exec php phpcpd --fuzzy src
+
+md: ## Run phpmd to detect code smells
+	$(DC) exec php phpmd src ansi phpmd.xml.dist
+
 unit: ## Run unit tests
 	$(EXEC_PHP) vendor/bin/phpunit
 
 ci: ## Run all tests and code quality
 	$(MAKE) fix
+	$(MAKE) cpd
+	$(MAKE) md
 	$(MAKE) phpstan
 	$(MAKE) unit
