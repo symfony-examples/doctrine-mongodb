@@ -28,8 +28,15 @@ class TraceCommand extends Command
         try {
             $traces = $this->documentManager->getRepository(Trace::class)->findAll();
 
+            if (0 === count($traces)) {
+                $io->info('Trace document is empty');
+                return Command::SUCCESS;
+            }
+
             foreach ($traces as $trace) {
-                $io->info(sprintf('username : %s IP address : %s', $trace->getUsername(), $trace->getIpAddress()));
+                $io->info(
+                    sprintf('username : "%s" IP address : "%s"', $trace->getUsername(), $trace->getIpAddress())
+                );
             }
 
             return Command::SUCCESS;

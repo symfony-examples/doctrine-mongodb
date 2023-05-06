@@ -62,11 +62,17 @@ class Trace
     }
 
     #[ODM\PrePersist]
-    public function onPrePersist(): void
+    #[ODM\PreUpdate]
+    public function onPreSave(): void
     {
         // encrypt username and IP address before persist
-        $this->username = OpenSSL::encrypt($this->username);
-        $this->ipAddress = OpenSSL::encrypt($this->ipAddress);
+        if (is_string($this->username)) {
+            $this->username = OpenSSL::encrypt($this->username);
+        }
+
+        if (is_string($this->ipAddress)) {
+            $this->ipAddress = OpenSSL::encrypt($this->ipAddress);
+        }
 
         $this->createdDate = new \DateTime();
     }
@@ -75,7 +81,14 @@ class Trace
     public function onPostLoad(LifecycleEventArgs $eventArgs): void
     {
         // decrypt username and IP address
-        $eventArgs->getDocument()->setUsername(OpenSSL::decrypt($eventArgs->getDocument()->getUsername()));
-        $eventArgs->getDocument()->setIpAddress(OpenSSL::decrypt($eventArgs->getDocument()->getIpAddress()));
+        if (($document = $eventArgs->getDocument()) instanceof Trace) {
+            if (is_string($document->getUsername())) {
+                $document->setUsername(OpenSSL::decrypt($document->getUsername()));
+            }
+
+            if (is_string($document->getIpAddress())) {
+                $document->setIpAddress(OpenSSL::decrypt($document->getIpAddress()));
+            }
+        }
     }
 }

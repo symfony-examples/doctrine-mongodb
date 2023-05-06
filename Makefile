@@ -46,7 +46,7 @@ fix: ## Run php cs fixer
 check-cs: ## Run php cs fixer
 	$(MAKE) fix --dry-run
 
-phpstan: ## Run phpstan
+phpstan: ## Run phpstan code static analyze
 	$(EXEC_PHP) ./vendor/bin/phpstan analyse -c phpstan.neon
 
 unit: ## Run unit tests

@@ -80,12 +80,14 @@ class Company extends AbstractDocument
         return $this;
     }
 
-    public function getAddresses(): ArrayCollection
+    /** @psalm-return Collection<Address> */
+    public function getAddresses(): Collection
     {
         return $this->addresses;
     }
 
-    public function setAddresses(ArrayCollection $addresses): self
+    /** @psalm-param Collection<Address> $addresses */
+    public function setAddresses(Collection $addresses): self
     {
         $this->addresses = $addresses;
 

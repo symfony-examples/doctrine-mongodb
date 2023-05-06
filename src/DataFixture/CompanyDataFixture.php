@@ -10,7 +10,7 @@ use Doctrine\Persistence\ObjectManager;
 
 class CompanyDataFixture implements ODMFixtureInterface
 {
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
         $manager->persist(
             (new Company())

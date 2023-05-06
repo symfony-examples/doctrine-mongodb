@@ -8,7 +8,7 @@ use Doctrine\Persistence\ObjectManager;
 
 class TraceDataFixture implements ODMFixtureInterface
 {
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager): void
     {
         $manager->persist(
             (new Trace())
