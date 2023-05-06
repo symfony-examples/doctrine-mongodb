@@ -21,7 +21,7 @@ class Trace
 
     /**
      * Document TTL, expired automatic after 3600 seconds
-     * Useful for data retention
+     * Useful for data retention.
      */
     #[ODM\Index(name: 'trace_ttl', expireAfterSeconds: 3600)]
     #[ODM\Field(type: 'date', nullable: false)]

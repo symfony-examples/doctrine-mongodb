@@ -41,10 +41,10 @@ data-fixtures: ## Execute doctrine fixtures.
 .PHONY: fix check-cs phpstan unit ci
 
 fix: ## Run php cs fixer
-	$(EXEC_PHP) vendor/bin/php-cs-fixer fix -vvv --config=.php-cs-fixer.dist.php --cache-file=.php-cs-fixer.cache $(filter-out $@,$(MAKECMDGOALS))
+	$(DC) exec -e PHP_CS_FIXER_IGNORE_ENV=1 php ./vendor/bin/php-cs-fixer fix -vvv --config=.php-cs-fixer.dist.php --cache-file=.php-cs-fixer.cache
 
 check-cs: ## Run php cs fixer
-	$(MAKE) fix --dry-run
+	$(DC) exec -e PHP_CS_FIXER_IGNORE_ENV=1 php ./vendor/bin/php-cs-fixer fix -vvv --config=.php-cs-fixer.dist.php --cache-file=.php-cs-fixer.cache --dry-run
 
 phpstan: ## Run phpstan code static analyze
 	$(EXEC_PHP) ./vendor/bin/phpstan analyse -c phpstan.neon

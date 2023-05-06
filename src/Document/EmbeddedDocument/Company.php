@@ -4,8 +4,8 @@ namespace App\Document\EmbeddedDocument;
 
 use App\Document\AbstractDocument;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 #[ODM\Document(collection: 'Company')]
 class Company extends AbstractDocument

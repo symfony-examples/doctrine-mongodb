@@ -30,6 +30,7 @@ class TraceCommand extends Command
 
             if (0 === count($traces)) {
                 $io->info('Trace document is empty');
+
                 return Command::SUCCESS;
             }
 

@@ -32,7 +32,7 @@ final class OpenSSL
 
         $hmac = hash_hmac(self::HASH_ALGO, $ciphertextRaw, self::KEY, true);
 
-        return base64_encode( $iv.$hmac.$ciphertextRaw);
+        return base64_encode($iv.$hmac.$ciphertextRaw);
     }
 
     public static function decrypt(string $ciphertext): ?string
@@ -46,8 +46,8 @@ final class OpenSSL
             }
 
             $iv = substr($c, 0, $ivLen);
-            $hmac = substr($c, $ivLen, $sha2len=32);
-            $ciphertextRaw = substr($c, $ivLen+$sha2len);
+            $hmac = substr($c, $ivLen, $sha2len = 32);
+            $ciphertextRaw = substr($c, $ivLen + $sha2len);
             $originalPlaintext = openssl_decrypt(
                 $ciphertextRaw,
                 self::CIPHER,
