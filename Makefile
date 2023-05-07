@@ -53,10 +53,13 @@ cpd: ## Run phpcpd to detect duplicated code source
 	$(DC) exec php phpcpd --fuzzy src
 
 md: ## Run phpmd to detect code smells
-	$(DC) exec php phpmd src ansi phpmd.xml.dist
+	$(DC) exec php phpmd src,tests ansi phpmd.xml.dist
 
 unit: ## Run unit tests
 	$(EXEC_PHP) vendor/bin/phpunit
+
+unit-coverage: ## Run unit tests with code coverage generate
+	$(EXEC_PHP) vendor/bin/phpunit --coverage-text
 
 ci: ## Run all tests and code quality
 	$(MAKE) fix
