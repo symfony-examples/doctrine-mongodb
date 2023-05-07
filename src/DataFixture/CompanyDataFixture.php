@@ -30,6 +30,13 @@ class CompanyDataFixture implements ODMFixtureInterface
                         ->setCity('Paris')
                         ->setZipCode('75001')
                 )
+                ->addAddress(
+                    (new Address())
+                        ->setStreetNumber('7')
+                        ->setStreetName('du foot')
+                        ->setCity('Paris')
+                        ->setZipCode('75008')
+                )
         );
 
         $manager->flush();

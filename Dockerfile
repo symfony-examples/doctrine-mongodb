@@ -45,6 +45,13 @@ RUN wget -c https://phar.phpunit.de/phpcpd.phar -O /usr/local/bin/phpcpd \
     && wget -c https://phpmd.org/static/latest/phpmd.phar -O /usr/local/bin/phpmd \
     && chmod +x /usr/local/bin/phpcpd /usr/local/bin/phpmd
 
+## XDEBUG
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/
+RUN install-php-extensions xdebug-3.2.1;
+COPY .docker/php/xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+#COPY .docker/php/error_reporting.ini /usr/local/etc/php/conf.d/error_reporting.ini
+## END XDEBUG
+
 FROM builder as ci
 ENV APP_ENV=test
 

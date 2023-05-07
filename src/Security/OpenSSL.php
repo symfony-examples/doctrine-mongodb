@@ -23,7 +23,8 @@ final class OpenSSL
             $plaintext,
             self::CIPHER,
             self::KEY,
-            OPENSSL_RAW_DATA, $iv
+            OPENSSL_RAW_DATA,
+            $iv
         );
 
         if (!is_string($ciphertextRaw)) {

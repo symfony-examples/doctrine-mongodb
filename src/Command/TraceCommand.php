@@ -2,8 +2,7 @@
 
 namespace App\Command;
 
-use App\Document\SecureDocument\Trace;
-use Doctrine\ODM\MongoDB\DocumentManager;
+use App\Manager\TraceManager;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -17,7 +16,7 @@ use Throwable;
 )]
 class TraceCommand extends Command
 {
-    public function __construct(protected DocumentManager $documentManager, string $name = null)
+    public function __construct(protected TraceManager $traceManager, string $name = null)
     {
         parent::__construct($name);
     }
@@ -27,7 +26,7 @@ class TraceCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         try {
-            $traces = $this->documentManager->getRepository(Trace::class)->findAll();
+            $traces = $this->traceManager->findAll();
 
             if (0 === count($traces)) {
                 $io->info('Trace document is empty');
