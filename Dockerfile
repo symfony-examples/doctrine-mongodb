@@ -17,6 +17,12 @@ COPY .docker/php/symfony.ini /usr/local/etc/php/conf.d/
 
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 
+## INSTALL MONGODB DRIVER
+RUN set -xe \
+    && apk add --no-cache --update --virtual .phpize-deps $PHPIZE_DEPS openssl curl-dev openssl-dev \
+    && pecl install mongodb
+COPY ./.docker/php/mongodb.ini /usr/local/etc/php/conf.d/
+
 CMD ["php-fpm", "-F"]
 
 EXPOSE 9000
@@ -33,13 +39,6 @@ RUN apk add symfony-cli
 
 HEALTHCHECK --interval=5s --timeout=3s --retries=3 CMD symfony check:req
 
-## INSTALL MONGODB DRIVER
-RUN set -xe \
-    && apk add --no-cache --update --virtual .phpize-deps $PHPIZE_DEPS openssl curl-dev openssl-dev \
-    && pecl install mongodb
-
-COPY ./.docker/php/mongodb.ini /usr/local/etc/php/conf.d/
-
 ## INSTALL PHP DETECTORS (PHPCPD & PHPMD)
 RUN wget -c https://phar.phpunit.de/phpcpd.phar -O /usr/local/bin/phpcpd \
     && wget -c https://phpmd.org/static/latest/phpmd.phar -O /usr/local/bin/phpmd \
@@ -55,19 +54,17 @@ COPY .docker/php/xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 FROM builder as ci
 ENV APP_ENV=test
 
-### INSTALL DEPENDENCIES DEV REQUIREMENTS
+### INSTALL DEPENDENCIES WITH DEV REQUIREMENTS
 RUN set -eux; \
     composer install --prefer-dist --no-progress --no-scripts --no-interaction --optimize-autoloader;
 
 ### COPY ADDITIONAL PROJECT FILES AND DIRECTORY
 COPY bin bin/
 COPY config config/
-COPY migrations migrations/
 COPY public public/
 COPY src src/
-COPY templates templates/
 COPY tests tests/
-COPY .env ./ .env.test .php-cs-fixer.dist.php phpstan.neon phpunit.xml.dist ./
+COPY .env .env.test .php-cs-fixer.dist.php phpstan.neon phpunit.xml.dist phpmd.xml.dist ./
 
 ### RUN COMPOSER SCRIPTS AND CLEAR CAHE
 RUN set -eux; \
