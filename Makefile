@@ -47,7 +47,7 @@ check-cs: ## Run php cs fixer
 	$(DC) exec -e PHP_CS_FIXER_IGNORE_ENV=1 php ./vendor/bin/php-cs-fixer fix -vvv --config=.php-cs-fixer.dist.php --cache-file=.php-cs-fixer.cache --dry-run
 
 phpstan: ## Run phpstan code static analyze
-	$(EXEC_PHP) ./vendor/bin/phpstan analyse -c phpstan.neon
+	$(EXEC_PHP) ./vendor/bin/phpstan analyse -c phpstan.neon --memory-limit=256M
 
 cpd: ## Run phpcpd to detect duplicated code source
 	$(DC) exec php phpcpd --fuzzy src

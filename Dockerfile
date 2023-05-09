@@ -54,7 +54,13 @@ COPY .docker/php/xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 FROM builder as ci
 ENV APP_ENV=test
 
+## INSTALL PHP DETECTORS (PHPCPD & PHPMD)
+RUN wget -c https://phar.phpunit.de/phpcpd.phar -O /usr/local/bin/phpcpd \
+    && wget -c https://phpmd.org/static/latest/phpmd.phar -O /usr/local/bin/phpmd \
+    && chmod +x /usr/local/bin/phpcpd /usr/local/bin/phpmd
+
 ### INSTALL DEPENDENCIES WITH DEV REQUIREMENTS
+COPY composer.json composer.lock symfony.lock ./
 RUN set -eux; \
     composer install --prefer-dist --no-progress --no-scripts --no-interaction --optimize-autoloader;
 

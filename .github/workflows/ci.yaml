@@ -1,0 +1,105 @@
+name: SF Doctrine Mongodb CI
+
+on:
+  push
+
+# read right github package
+permissions:
+  contents: 'read'
+  id-token: 'write'
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: 'actions/checkout@v3'
+        name: Checkout
+        with:
+          persist-credentials: false
+
+      - name: Validates composer.json file content
+        run: composer validate
+
+      - name: Symfony security checker
+        uses: symfonycorp/security-checker-action@v4
+
+  build:
+    runs-on: ubuntu-latest
+    needs: security
+    # @see https://docs.github.com/fr/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idoutputs
+    #outputs:
+    #  docker-image-output: ${{ steps.docker-image.outputs.stdout }}
+    steps:
+      - uses: 'actions/checkout@v3'
+        name: Checkout
+        with:
+          persist-credentials: false
+
+      - name: Login to GitHub Container Registry
+        uses: 'docker/login-action@v1'
+        with:
+          registry: ghcr.io
+          username: yosrib
+          password: ${{ secrets.YB_GH_REPOSITORY_TOKEN }}
+
+      - name: Set up Depot CLI
+        uses: 'depot/setup-action@v1'
+
+      # @see https://github.com/depot/build-push-action
+      - name: Build docker image for CI
+        id: 'docker-image'
+        uses: 'depot/build-push-action@v1'
+        with:
+          project: ${{ secrets.DEPOT_PROJECT_ID }}
+          token: ${{ secrets.DEPOT_PROJECT_TOKEN }}
+          push: true
+          tags: ghcr.io/symfony-examples/doctrine-mongodb:ci
+          target: ci
+          context: .
+          file: ./Dockerfile
+          #load: true # (--load) to download the image to local Docker daemon
+
+  code-quality:
+    runs-on: ubuntu-latest
+    needs: build
+    container:
+      image: ghcr.io/symfony-examples/doctrine-mongodb:ci
+      env:
+        PHP_CS_FIXER_IGNORE_ENV: 1
+    steps:
+      # todo: add cache
+      - name: PHP code standard fixer (dry run)
+        working-directory: /var/www/symfony
+        run: ./vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run
+
+      - name: PHP Mess Detector
+        working-directory: /var/www/symfony
+        run: phpmd src,tests ansi phpmd.xml.dist
+
+      - name: PHP Copy Paste Detector
+        working-directory: /var/www/symfony
+        run: phpcpd --fuzzy src
+
+      - name: PHP code static analyses
+        working-directory: /var/www/symfony
+        run: ./vendor/bin/phpstan analyse -c phpstan.neon --memory-limit=256M
+
+  tests:
+    runs-on: ubuntu-latest
+    needs: code-quality
+    container: ghcr.io/symfony-examples/doctrine-mongodb:ci
+    # @see https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idservices
+    services:
+      mongo:
+        image: mongo:6.0.5
+        env:
+          MONGO_INITDB_DATABASE: test
+        ports:
+          - 27017:27017
+
+    steps:
+      # todo: add cache
+      - name: PHP unit tests
+        working-directory: /var/www/symfony
+        run: ./vendor/bin/phpunit
+        #uses: docker://ghcr.io/symfony-examples/doctrine-mongodb:ci
