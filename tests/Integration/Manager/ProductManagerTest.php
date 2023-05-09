@@ -22,7 +22,7 @@ class ProductManagerTest extends AbstractKernelTestCase
         $this->loadFixtures();
 
         $products = $this->productManager->findAll();
-        self::assertCount(1, $products);
+        self::assertCount(2, $products);
         self::assertIsIterable($products);
 
         foreach ($products as $product) {

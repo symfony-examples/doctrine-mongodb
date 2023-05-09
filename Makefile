@@ -19,7 +19,18 @@ logs: ## View containers logs.
 shell: ## Run bash shell in php container.
 	$(DC) exec $(PHP_CONTAINER) sh
 
-# todo: installation job
+prune:
+	$(DC) down -v
+
+install-local: ## Install project
+	@echo "Down project if exist"
+	$(MAKE) prune
+	@echo "Build & Run container"
+	$(DC) up -d --build
+	@echo "Install dependencies"
+	$(MAKE) composer install
+	@echo "Init database"
+	$(MAKE) data-fixtures
 
 ##
 ## Symfony commands
@@ -27,7 +38,7 @@ shell: ## Run bash shell in php container.
 .PHONY: composer console data-fixtures
 
 composer: ## Run composer in php container.
-	$(EXEC_PHP) composer $(filter-out $@,$(MAKECMDGOALS))
+	$(DC) exec php composer $(filter-out $@,$(MAKECMDGOALS))
 
 console: ## Run symfony console in php container.
 	$(EXEC_PHP) php bin/console $(filter-out $@,$(MAKECMDGOALS))
